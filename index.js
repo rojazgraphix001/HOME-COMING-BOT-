@@ -16,7 +16,7 @@ import config from './config.js'
 global.config = config
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const pluginDir = path.join(__dirname, 'plugins')
+const pluginDir = path.join(__dirname, 'plugin')
 
 export const plugins = new Map()
 
@@ -364,9 +364,13 @@ async function start() {
             }
 
             if (connection === 'close') {
-                isConnecting = false
-                if (statusCode === DisconnectReason.loggedOut) return
-                let delay = 5000
+    isConnecting = false
+    console.log(chalk.red(`[CONNECTION CLOSED] statusCode=${statusCode} reason=${errorMessage}`))
+    if (statusCode === DisconnectReason.loggedOut) {
+        console.log(chalk.red('[LOGGED OUT] Session invalid — delete ./session and re-pair.'))
+        return
+    }
+    let delay = 5000
                 if (errorMessage.includes('Stream Errored')) {
                     delay = 15000
                 } else if (statusCode === DisconnectReason.connectionLost || statusCode === 0) {
